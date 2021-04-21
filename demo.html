@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Load required Bootstrap and BootstrapVue CSS -->
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+    <!-- Load polyfills to support older browsers -->
+    <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"
+        crossorigin="anonymous"></script>
+
+    <!-- Load Vue followed by BootstrapVue -->
+    <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+    <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+
+    <!-- Load the following for BootstrapVueIcons support -->
+    <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+
+    <!-- Cargar componente Painting Canvas -->
+    <script src="paintingcanvas.js"></script>
+
+    <!-- Configuración de estilo -->
+    <link rel="stylesheet" href="index.css" />
+    <title>Ejercicios TD</title>
+</head>
+
+<body>
+    <div id="appcanvas">
+        <b-container fluid>
+            <div class="fullview">
+                <b-row>
+                    <b-col cols="10" sm="10" md="10" lg="10" xl="10">
+                        <painting-canvas width="1024" height="768" v-bind:pens="pens" v-bind:src="src" ref="canvas"
+                            class="fullview">
+                        </painting-canvas>
+                    </b-col>
+                    <b-col cols="2" sm="2" md="2" lg="2" xl="2">
+                        <p v-for="(pen,index) in pens" class="wrap">
+                            {{index}}:
+                            {{Math.trunc(pen.x1*100)/100}},{{Math.trunc(pen.y1*100)/100}}
+                        </p>
+                    </b-col>
+                </b-row>
+            </div>
+        </b-container>
+    </div>
+    <script src="demo.js"></script>
+</body>
+
+</html>
