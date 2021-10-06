@@ -136,19 +136,21 @@ Vue.component('painting-canvas', {
             this.ctx.lineTo(x1 + 0.5, y1 + 0.5);
             this.ctx.stroke();
         },
-        startPen(pen, XY, timeStamp) {
+        startPen(pen, XY, timeStamp, force, rotationAngle) {
             pen.active = true;
             pen.point = true;
             pen.timeStamp = timeStamp;
             pen.timeLapse = 0;
             [pen.x1, pen.y1] = XY;
             [pen.x0, pen.y0] = XY;
+            pen.force = force;
+            pen.rotationAngle = rotationAngle;
         },
-        stopPen(pen, XY, timeStamp, force) {
+        stopPen(pen, XY, timeStamp, force, rotationAngle) {
             pen.active = false;
-            this.steadyPen(pen, XY, timeStamp, force);
+            this.steadyPen(pen, XY, timeStamp, force, rotationAngle);
         },
-        steadyPen(pen, XY, timeStamp, force) {
+        steadyPen(pen, XY, timeStamp, force, rotationAngle) {
             if (pen.point) {
                 pen.point = false;
                 pen.timeLapse = timeStamp - pen.timeStamp;
@@ -159,10 +161,10 @@ Vue.component('painting-canvas', {
                     (this.maxInk - this.minInk) * pen.timeLapse / this.maxTime + this.minInk :
                     this.maxInk) * (force || 0.5) * 2;
                 this.drawPoint(pen.color, pen.x1, pen.y1, lineWidth);
-                this.$emit('pen', { pen: "steady", x: pen.x1, y: pen.y1, color: pen.color, lineWidth: lineWidth });
+                this.$emit('pen', { pen: "steady", x: pen.x1, y: pen.y1, color: pen.color, lineWidth: lineWidth, force: force || 0.5, rotationAngle: rotationAngle || 0 });
             }
         },
-        movePen(pen, XY, timeStamp, force) {
+        movePen(pen, XY, timeStamp, force, rotationAngle) {
             if (pen.active) {
                 pen.point = false;
                 pen.timeLapse = timeStamp - pen.timeStamp;
@@ -174,7 +176,7 @@ Vue.component('painting-canvas', {
                     this.maxInk - (this.maxInk - this.minInk) * distance / this.maxDistance :
                     this.maxInk) * (force || 0.5) * 2;
                 this.drawStroke(pen.color, pen.x0, pen.y0, pen.x1, pen.y1, lineWidth);
-                this.$emit('pen', { pen: "move", x0: pen.x0, y0: pen.y0, x1: pen.x1, y1: pen.y1, color: pen.color, lineWidth: lineWidth });
+                this.$emit('pen', { pen: "move", x0: pen.x0, y0: pen.y0, x1: pen.x1, y1: pen.y1, color: pen.color, lineWidth: lineWidth, force: force || 0.5, rotationAngle: rotationAngle || 0 });
             }
         },
         mousedown(event) {
@@ -192,20 +194,19 @@ Vue.component('painting-canvas', {
         touchstart(event) {
             for (let i = 0; i < event.changedTouches.length; i++) {
                 let touch = event.changedTouches[i];
-                this.startPen(this.pens[touch.identifier], this.calcCoordinates(touch), event.timeStamp);
+                this.startPen(this.pens[touch.identifier], this.calcCoordinates(touch), event.timeStamp, touch.force, touch.rotationAngle);
             }
         },
         touchend(event) {
             for (let i = 0; i < event.changedTouches.length; i++) {
                 let touch = event.changedTouches[i];
-                this.stopPen(this.pens[touch.identifier], this.calcCoordinates(touch), event.timeStamp, touch.force);
+                this.stopPen(this.pens[touch.identifier], this.calcCoordinates(touch), event.timeStamp, touch.force, touch.rotationAngle);
             }
         },
         touchmove(event) {
             for (let i = 0; i < event.changedTouches.length; i++) {
                 let touch = event.changedTouches[i];
-                console.log(touch);
-                this.movePen(this.pens[touch.identifier], this.calcCoordinates(touch), event.timeStamp, touch.force);
+                this.movePen(this.pens[touch.identifier], this.calcCoordinates(touch), event.timeStamp, touch.force, touch.rotationAngle);
             }
         }
     },
@@ -226,7 +227,9 @@ Vue.component('painting-canvas', {
                 x0: 0,
                 y0: 0,
                 x1: 0,
-                y1: 0
+                y1: 0,
+                force: 0,
+                rotationAngle: 0
             });
         }
         this.ctx = this.canvas.getContext("2d");

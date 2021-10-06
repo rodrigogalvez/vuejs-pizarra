@@ -39,10 +39,11 @@
                         </painting-canvas>
                     </b-col>
                     <b-col cols="2" sm="2" md="2" lg="2" xl="2">
-                        <p v-for="(pen,index) in pens" class="wrap">
+                        <div v-for="(pen,index) in pens" class="wrap">
                             {{index}}:
-                            {{Math.trunc(pen.x1*100)/100}},{{Math.trunc(pen.y1*100)/100}}
-                        </p>
+                            {{Math.trunc(pen.x1*100)/100}},{{Math.trunc(pen.y1*100)/100}}|
+                            {{pen.force}},{{pen.rotationAngle}}
+                        </div>
                     </b-col>
                 </b-row>
             </div>
